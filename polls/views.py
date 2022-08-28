@@ -370,11 +370,6 @@ def quoteRetrieval(request):
                 x_heart = np.array([], dtype=np.float32)
                 x_stroke = np.array([], dtype=np.float32)
 
-                
-                
-                rel_ass = assessments.last()
-                print(vars(rel_ass))
-
                 if(len(assessments) != 0):
                     rel_ass = assessments.last()
                     x_heart = np.array([int(customer.smokerflag), int(rel_ass.alcoholflag), int(rel_ass.physicalactivityflag),
@@ -390,20 +385,17 @@ def quoteRetrieval(request):
                         (1-int(customer.smokerflag)), int(customer.smokerflag)], dtype=np.float32).reshape(1, -1)
                 
                 #Multiplying all guesses by 1.1 to profit 10%
-
                 if(attributes['generalFlag']):
                     message += '<br> Calculated General Coverage Quote: ' + \
                             str(math.ceil(1.1*general_model.predict(x_general)[0])) + '$'
 
-                
                 if(attributes['heartFlag']):
                     if(len(assessments) == 0):
                         message += '<br> Cannot calculate heart disease coverage quote as no valid assessment exists.'
                     else:
                         message += '<br> Calculated Heart Disease Coverage Quote: ' + \
                                 str(math.ceil(1.1*attributes['heartAmount']*(heart_disease_model.predict_proba(x_heart)[0][1]))) + '$'
-
-                print(heart_disease_model.predict_proba(x_heart)[0][1])
+                                
                 if(attributes['strokeFlag']):
                     if(len(assessments) == 0):
                         message += '<br> Cannot calculate stroke coverage quote as no valid assessment exists.'
