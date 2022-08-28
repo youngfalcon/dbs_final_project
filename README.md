@@ -2,13 +2,14 @@
 Author: Caglar Dogan
 cd2647  N18970424
 
+For your information: The 'data' and 'models' files directly under the root in this repository are folders in which files downloaded from the azure blob (pre-trained ML models to be read or data to re-train ML models) are stored, as well as newly trained ML models.
+
 This program is designed to be run with python3.
 
 Moreover, the 'ODBC Driver 18 for SQL Server' is required for the connections to Azure SQL Server.
 Please see the following website on the directions to run this:
 
 https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16
-
 
 The crucial Django/Azure specific dependencies for this program are:
 
@@ -31,3 +32,4 @@ In the requirements.txt, a much bigger set of dependencies is presented represen
 
 In any event, you can reach out to me via the following e-mail address: cd2647@nyu.edu
 
+The provided file sql_script.txt is the last version of the forward-engineered SQL code for our database schema, and it includes specified physical design elements like indexes. It is very similar to the one presented for part 3, but I am presenting it again here for your observation. Please note that it is designed for Azure SQL Server.
