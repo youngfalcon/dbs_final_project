@@ -86,8 +86,7 @@ DATABASES = {
          'HOST': 'cdogan.database.windows.net',
          'PORT': '1433',
          'OPTIONS': {
-             'driver': sorted(pyodbc.drivers()).pop(), #'ODBC Driver 18 for SQL Server', #ODBC Driver 18 for SQL Server
-             #'MARS_Connection': 'True',
+             'driver': 'FreeTDS'
          }
      }
  }
