@@ -257,21 +257,24 @@ def updateStrokeModel(request):
 def customerRegistration(request):
     if request.method == "POST":
         form = CustomerForm(request.POST)
-        
-        if form.is_valid():
-            print('Valid form received.')
-            attributes = form.cleaned_data
-            attributes['custdob'] = request.POST.dict()['custdob']
-            attributes['startdate'] = timezone.now().strftime("%Y-%m-%d")
-            attributes['enddate'] = None
-           
-            customer = Customer(**(attributes))
-            customer.save()
-        else:
-            print('Invalid form!')
-            print(form.errors.as_data())
+        try:
+            if form.is_valid():
+                print('Valid form received.')
+                attributes = form.cleaned_data
+                attributes['custdob'] = request.POST.dict()['custdob']
+                attributes['startdate'] = timezone.now().strftime("%Y-%m-%d")
+                attributes['enddate'] = None
+            
+                customer = Customer(**(attributes))
+                customer.save()
+            else:
+                print('Invalid form!')
+                print(form.errors.as_data())
 
-        return render(request, 'polls/customer_form.html', {'form': form})
+            return render(request, 'polls/customer_form.html', {'form': form})
+        except:
+            print('Server error!')
+            return render(request, 'polls/customer_form.html', {'form': form})
     else:
         form = CustomerForm()
         return render(request, 'polls/customer_form.html', {'form': form})
@@ -279,139 +282,147 @@ def customerRegistration(request):
 def assessmentEntry(request):
     if request.method == "POST":
         form = AssessmentForm(request.POST)
-        
-        if form.is_valid(): #TODO: Fix Cleaning
-            print('Valid form received.')
-            attributes = form.cleaned_data
-            attributes['custdob'] = request.POST.dict()['custdob']
-            attributes['assessmentdate'] = timezone.now().strftime("%Y-%m-%d")
-            attributes['lastassessmentflag'] = True
+        try:
+            if form.is_valid():
+                print('Valid form received.')
+                attributes = form.cleaned_data
+                attributes['custdob'] = request.POST.dict()['custdob']
+                attributes['assessmentdate'] = timezone.now().strftime("%Y-%m-%d")
+                attributes['lastassessmentflag'] = True
 
-            print(attributes)
+                print(attributes)
 
-            customer = Customer.objects.filter(custfirstname=attributes['custfirstname'], 
-                                                custmiddleinitial = attributes['custmiddleinitial'],
-                                                custlastname = attributes['custlastname'],
-                                                custsuffix = attributes['custsuffix'],
-                                                custdob = attributes['custdob'],
-                                                ).order_by('ssn_tin').first()
+                customer = Customer.objects.filter(custfirstname=attributes['custfirstname'], 
+                                                    custmiddleinitial = attributes['custmiddleinitial'],
+                                                    custlastname = attributes['custlastname'],
+                                                    custsuffix = attributes['custsuffix'],
+                                                    custdob = attributes['custdob'],
+                                                    ).order_by('ssn_tin').first()
 
-            del attributes['custfirstname']
-            del attributes['custmiddleinitial']
-            del attributes['custlastname']
-            del attributes['custsuffix']
-            del attributes['custdob']
+                del attributes['custfirstname']
+                del attributes['custmiddleinitial']
+                del attributes['custlastname']
+                del attributes['custsuffix']
+                del attributes['custdob']
 
-            assessment = Criticalinsurancedata(custfirstname=customer, custmiddleinitial=customer.custmiddleinitial,
-                                custlastname=customer.custlastname, custsuffix=customer.custsuffix, custdob=customer.custdob,
-                                **(attributes))
+                assessment = Criticalinsurancedata(custfirstname=customer, custmiddleinitial=customer.custmiddleinitial,
+                                    custlastname=customer.custlastname, custsuffix=customer.custsuffix, custdob=customer.custdob,
+                                    **(attributes))
 
-            assessment.save()
-        else:
-            print('Invalid form!')
-            print(form.errors.as_data())
-            
-        return render(request, 'polls/assessment_form.html', {'form': form})
+                assessment.save()
+            else:
+                print('Invalid form!')
+                print(form.errors.as_data())
+            return render(request, 'polls/assessment_form.html', {'form': form})
+        except:
+            print('Server error!')
+            return render(request, 'polls/assessment_form.html', {'form': form})
     else:
         form = AssessmentForm()
         return render(request, 'polls/assessment_form.html', {'form': form})
 
 
+
 def quoteRetrieval(request):
-    if request.method == "POST":
-        form = QuoteForm(request.POST)
+    try:
+        if request.method == "POST":
+            form = QuoteForm(request.POST)
 
-        general_model = get_model('general_model')
-        heart_disease_model = get_model('heart_disease_model')
-        stroke_model = get_model('stroke_model')
+            general_model = get_model('general_model')
+            heart_disease_model = get_model('heart_disease_model')
+            stroke_model = get_model('stroke_model')
 
-        if form.is_valid():
-            print('Valid form received.')
-            attributes = form.cleaned_data
-            attributes['custdob'] = request.POST.dict()['custdob']
+            if form.is_valid():
+                print('Valid form received.')
+                attributes = form.cleaned_data
+                attributes['custdob'] = request.POST.dict()['custdob']
 
-            customer = Customer.objects.filter(custfirstname=attributes['custfirstname'], 
-                                                custmiddleinitial = attributes['custmiddleinitial'],
-                                                custlastname = attributes['custlastname'],
-                                                custsuffix = attributes['custsuffix'],
-                                                custdob = attributes['custdob'],
-                                                ).order_by('ssn_tin').first()
+                customer = Customer.objects.filter(custfirstname=attributes['custfirstname'], 
+                                                    custmiddleinitial = attributes['custmiddleinitial'],
+                                                    custlastname = attributes['custlastname'],
+                                                    custsuffix = attributes['custsuffix'],
+                                                    custdob = attributes['custdob'],
+                                                    ).order_by('ssn_tin').first()
 
-            assessments = Criticalinsurancedata.objects.filter(custfirstname=attributes['custfirstname'], 
-                                                custmiddleinitial = attributes['custmiddleinitial'],
-                                                custlastname = attributes['custlastname'],
-                                                custsuffix = attributes['custsuffix'],
-                                                custdob = attributes['custdob'],
-                                                ).order_by('assessmentdate') #.last()
+                assessments = Criticalinsurancedata.objects.filter(custfirstname=attributes['custfirstname'], 
+                                                    custmiddleinitial = attributes['custmiddleinitial'],
+                                                    custlastname = attributes['custlastname'],
+                                                    custsuffix = attributes['custsuffix'],
+                                                    custdob = attributes['custdob'],
+                                                    ).order_by('assessmentdate') #.last()
 
-            #If we can't find a registered customer with the given properties
-            if(customer == None):
-                messages.success(request, 'No such customer exists. Please check the form elements.')
+                #If we can't find a registered customer with the given properties
+                if(customer == None):
+                    messages.success(request, 'No such customer exists. Please check the form elements.')
+                    return render(request, 'polls/quote_form.html', {'form': form})
+
+                message = ''
+
+                #First, calculate the age of the customer
+                age = relativedelta(timezone.now(), customer.custdob).years
+
+                #In creating all the x values here, we check the correct pre-processign steps and order of elements.
+
+                #then, Create a numpy array in the correct form (Assume the customer is from the northeast)
+                x_general = np.array([age, customer.bmi, customer.numchildren, 
+                        int(customer.sex=='Male'), int(customer.smokerflag), 1, 0 ,0], dtype=np.float32).reshape(1, -1)
+
+                x_heart = np.array([], dtype=np.float32)
+                x_stroke = np.array([], dtype=np.float32)
+
+                
+                
+                rel_ass = assessments.last()
+                print(vars(rel_ass))
+
+                if(len(assessments) != 0):
+                    rel_ass = assessments.last()
+                    x_heart = np.array([int(customer.smokerflag), int(rel_ass.alcoholflag), int(rel_ass.physicalactivityflag),
+                        int(rel_ass.diffwalkingflag), int(customer.sex=='Male'), age, int(rel_ass.prevstrokeflag),
+                        int(rel_ass.diabeticflag), int(rel_ass.asthmaflag), int(rel_ass.kidneydiseaseflag),
+                        int(rel_ass.skincancerflag)], dtype=np.float32).reshape(1, -1)
+
+                    x_stroke = np.array([age, rel_ass.avgglucoselevel, customer.bmi, 
+                        int(rel_ass.hypertensionflag), int(rel_ass.prevheartdiseaseflag),
+                        int(customer.sex=='Male'), int(customer.evermarriedflag),
+                        int(rel_ass.worktype=='Private'), int(rel_ass.worktype=='Self-employed'),
+                        int(rel_ass.worktype=='Govt_job'), int(rel_ass.worktype=='children'), 0,
+                        (1-int(customer.smokerflag)), int(customer.smokerflag)], dtype=np.float32).reshape(1, -1)
+                
+                #Multiplying all guesses by 1.1 to profit 10%
+
+                if(attributes['generalFlag']):
+                    message += '<br> Calculated General Coverage Quote: ' + \
+                            str(math.ceil(1.1*general_model.predict(x_general)[0])) + '$'
+
+                
+                if(attributes['heartFlag']):
+                    if(len(assessments) == 0):
+                        message += '<br> Cannot calculate heart disease coverage quote as no valid assessment exists.'
+                    else:
+                        message += '<br> Calculated Heart Disease Coverage Quote: ' + \
+                                str(math.ceil(1.1*attributes['heartAmount']*(heart_disease_model.predict_proba(x_heart)[0][1]))) + '$'
+
+                print(heart_disease_model.predict_proba(x_heart)[0][1])
+                if(attributes['strokeFlag']):
+                    if(len(assessments) == 0):
+                        message += '<br> Cannot calculate stroke coverage quote as no valid assessment exists.'
+                    else:
+                        message += '<br> Calculated Stroke Coverage Quote: ' + \
+                                str(math.ceil(1.1*attributes['strokeAmount']*(stroke_model.predict_proba(x_stroke)[0][1]))) + '$'
+
+                #TODO: Update
+
+                messages.success(request, mark_safe(message))
                 return render(request, 'polls/quote_form.html', {'form': form})
 
-            message = ''
-
-            #First, calculate the age of the customer
-            age = relativedelta(timezone.now(), customer.custdob).years
-
-            #In creating all the x values here, we check the correct pre-processign steps and order of elements.
-
-            #then, Create a numpy array in the correct form (Assume the customer is from the northeast)
-            x_general = np.array([age, customer.bmi, customer.numchildren, 
-                    int(customer.sex=='Male'), int(customer.smokerflag), 1, 0 ,0], dtype=np.float32).reshape(1, -1)
-
-            x_heart = np.array([], dtype=np.float32)
-            x_stroke = np.array([], dtype=np.float32)
-
-            
-            
-            rel_ass = assessments.last()
-            print(vars(rel_ass))
-
-            if(len(assessments) != 0):
-                rel_ass = assessments.last()
-                x_heart = np.array([int(customer.smokerflag), int(rel_ass.alcoholflag), int(rel_ass.physicalactivityflag),
-                    int(rel_ass.diffwalkingflag), int(customer.sex=='Male'), age, int(rel_ass.prevstrokeflag),
-                    int(rel_ass.diabeticflag), int(rel_ass.asthmaflag), int(rel_ass.kidneydiseaseflag),
-                    int(rel_ass.skincancerflag)], dtype=np.float32).reshape(1, -1)
-
-                x_stroke = np.array([age, rel_ass.avgglucoselevel, customer.bmi, 
-                    int(rel_ass.hypertensionflag), int(rel_ass.prevheartdiseaseflag),
-                    int(customer.sex=='Male'), int(customer.evermarriedflag),
-                    int(rel_ass.worktype=='Private'), int(rel_ass.worktype=='Self-employed'),
-                    int(rel_ass.worktype=='Govt_job'), int(rel_ass.worktype=='children'), 0,
-                    (1-int(customer.smokerflag)), int(customer.smokerflag)], dtype=np.float32).reshape(1, -1)
-            
-            #Multiplying all guesses by 1.1 to profit 10%
-
-            if(attributes['generalFlag']):
-                message += '<br> Calculated General Coverage Quote: ' + \
-                        str(math.ceil(1.1*general_model.predict(x_general)[0])) + '$'
-
-           
-            if(attributes['heartFlag']):
-                if(len(assessments) == 0):
-                    message += '<br> Cannot calculate heart disease coverage quote as no valid assessment exists.'
-                else:
-                    message += '<br> Calculated Heart Disease Coverage Quote: ' + \
-                            str(math.ceil(1.1*attributes['heartAmount']*(heart_disease_model.predict_proba(x_heart)[0][1]))) + '$'
-
-            print(heart_disease_model.predict_proba(x_heart)[0][1])
-            if(attributes['strokeFlag']):
-                if(len(assessments) == 0):
-                    message += '<br> Cannot calculate stroke coverage quote as no valid assessment exists.'
-                else:
-                    message += '<br> Calculated Stroke Coverage Quote: ' + \
-                            str(math.ceil(1.1*attributes['strokeAmount']*(stroke_model.predict_proba(x_stroke)[0][1]))) + '$'
-
-            #TODO: Update
-
-            messages.success(request, mark_safe(message))
-            return render(request, 'polls/quote_form.html', {'form': form})
-
+            else:
+                print('Invalid form!')
+                return render(request, 'polls/quote_form.html', {'form': form})
         else:
-            print('Invalid form!')
+            form = QuoteForm()
             return render(request, 'polls/quote_form.html', {'form': form})
-    else:
-        form = QuoteForm()
+    except:
+        print('Error with the form!')
+        messages.success(request, mark_safe('There was an error with the last submitted form.'))
         return render(request, 'polls/quote_form.html', {'form': form})

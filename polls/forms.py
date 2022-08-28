@@ -82,7 +82,7 @@ class QuoteForm(forms.Form):
 
     generalFlag = forms.BooleanField(label='General Insurance', initial=True, required=False)  
     heartFlag = forms.BooleanField(label='Heart Disease Insurance', required=False)  
-    heartAmount = forms.FloatField(label='Coverage Amount For Heart Disease', initial=60000, required=False, disabled = True) 
+    heartAmount = forms.FloatField(label='Coverage Amount For Heart Disease', initial=60000, required=False) 
     strokeFlag = forms.BooleanField(label='Stroke Insurance', required=False)  
-    strokeAmount = forms.FloatField(label='Coverage Amount For Stroke', initial=60000, required=False, disabled = True) 
+    strokeAmount = forms.FloatField(label='Coverage Amount For Stroke', initial=60000, required=False) 
     
