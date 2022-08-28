@@ -1,4 +1,5 @@
 #Run after : python3 manage.py inspectdb > polls/models.py
+#Code taken from:
 #https://stackoverflow.com/questions/5315379/automatic-solution-for-add-a-related-name-argument-to-the-definition-for-xxx
 
 import fileinput
